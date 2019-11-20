@@ -1052,7 +1052,13 @@ func (val Value) AsBigFloat() *big.Float {
 	}
 
 	// Copy the float so that callers can't mutate our internal state
-	ret := *(val.v.(*big.Float))
+	var ret big.Float
+	switch v := val.v.(type) {
+	case big.Float:
+		ret = v
+	case *big.Float:
+		ret = *(v)
+	}
 
 	return &ret
 }
