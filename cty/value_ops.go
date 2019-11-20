@@ -162,7 +162,7 @@ func (val Value) Equals(other Value) Value {
 
 	switch {
 	case ty == Number:
-		result = val.v.(*big.Float).Cmp(other.v.(*big.Float)) == 0
+		result = val.AsBigFloat().Cmp(other.AsBigFloat()) == 0
 	case ty == Bool:
 		result = val.v.(bool) == other.v.(bool)
 	case ty == String:
@@ -1058,6 +1058,8 @@ func (val Value) AsBigFloat() *big.Float {
 		ret = v
 	case *big.Float:
 		ret = *(v)
+	default:
+		panic(fmt.Sprintf("value is not a big.Float nor a *big.Float: %T", v))
 	}
 
 	return &ret
