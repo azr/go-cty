@@ -2,6 +2,7 @@ package cty
 
 import (
 	"fmt"
+	"math/big"
 	"reflect"
 	"testing"
 )
@@ -10,6 +11,19 @@ func TestValueEquals(t *testing.T) {
 	capsuleA := CapsuleVal(capsuleTestType1, &capsuleTestType1Native{"capsuleA"})
 	capsuleB := CapsuleVal(capsuleTestType1, &capsuleTestType1Native{"capsuleB"})
 	capsuleC := CapsuleVal(capsuleTestType2, &capsuleTestType2Native{"capsuleC"})
+
+	three := Value{
+		ty: Number,
+		v:  *(big.NewFloat(3)),
+	}
+	four := Value{
+		ty: Number,
+		v:  *(big.NewFloat(4)),
+	}
+	pFour := Value{
+		ty: Number,
+		v:  big.NewFloat(4),
+	}
 
 	tests := []struct {
 		LHS      Value
@@ -42,6 +56,18 @@ func TestValueEquals(t *testing.T) {
 		{
 			NumberIntVal(2),
 			NumberIntVal(2),
+			BoolVal(true),
+		},
+
+		// Big floats
+		{
+			three,
+			four,
+			BoolVal(false),
+		},
+		{
+			four,
+			pFour,
 			BoolVal(true),
 		},
 
