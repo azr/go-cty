@@ -671,6 +671,11 @@ func TestValueEquals(t *testing.T) {
 			}
 		})
 		t.Run(fmt.Sprintf("gob %#v.Equals(%#v)", test.LHS, test.RHS), func(t *testing.T) {
+			defer func() {
+				if r := recover(); r != nil {
+					t.Fatalf("panic: %v", r)
+				}
+			}()
 			b := bytes.NewBuffer(nil)
 			err := gob.NewEncoder(b).Encode(test.RHS)
 			if err != nil {
