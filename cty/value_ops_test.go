@@ -1,6 +1,8 @@
 package cty
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
 	"math/big"
 	"reflect"
@@ -664,6 +666,21 @@ func TestValueEquals(t *testing.T) {
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("%#v.Equals(%#v)", test.LHS, test.RHS), func(t *testing.T) {
 			got := test.LHS.Equals(test.RHS)
+			if !got.RawEquals(test.Expected) {
+				t.Fatalf("Equals returned %#v; want %#v", got, test.Expected)
+			}
+		})
+		t.Run(fmt.Sprintf("gob %#v.Equals(%#v)", test.LHS, test.RHS), func(t *testing.T) {
+			b := bytes.NewBuffer(nil)
+			err := gob.NewEncoder(b).Encode(test.RHS)
+			if err != nil {
+				t.Fatalf("Failed to gob Encode: %v", err)
+			}
+			var RHS Value
+			if err := gob.NewDecoder(b).Decode(&RHS); err != nil {
+				t.Fatalf("Failed to gob Encode: %v", err)
+			}
+			got := test.LHS.Equals(RHS)
 			if !got.RawEquals(test.Expected) {
 				t.Fatalf("Equals returned %#v; want %#v", got, test.Expected)
 			}
